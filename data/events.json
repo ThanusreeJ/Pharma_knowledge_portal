@@ -1,0 +1,92 @@
+[
+    {
+        "name": "MIT Hacking Medicine",
+        "date": "March 15-17, 2026",
+        "location": "Boston, MA (Hybrid)",
+        "type": "hackathon",
+        "description": "Premier healthcare hackathon bringing together students, clinicians, and entrepreneurs",
+        "url": "https://hackingmedicine.mit.edu/",
+        "status": "upcoming"
+    },
+    {
+        "name": "BIO International Convention 2026",
+        "date": "June 3-6, 2026",
+        "location": "San Diego, CA",
+        "type": "conference",
+        "description": "World's largest biotech partnering and networking event",
+        "url": "https://www.bio.org/events/bio-international-convention",
+        "status": "upcoming"
+    },
+    {
+        "name": "ASHP Midyear Clinical Meeting",
+        "date": "December 8-12, 2026",
+        "location": "Las Vegas, NV",
+        "type": "conference",
+        "description": "Leading pharmacy conference for clinical pharmacists",
+        "url": "https://www.ashp.org/meetings-events/midyear",
+        "status": "upcoming"
+    },
+    {
+        "name": "FDA Drug Development Workshop",
+        "date": "April 22-23, 2026",
+        "location": "Virtual",
+        "type": "workshop",
+        "description": "Regulatory workshop on drug development and approval processes",
+        "url": "https://www.fda.gov/training-and-continuing-education",
+        "status": "upcoming"
+    },
+    {
+        "name": "Digital Health Innovation Summit",
+        "date": "May 10-12, 2026",
+        "location": "New York, NY",
+        "type": "conference",
+        "description": "Exploring AI and digital technologies in healthcare",
+        "url": "https://www.digitalhealthsummit.com/",
+        "status": "upcoming"
+    },
+    {
+        "name": "Pharma Hackathon Global",
+        "date": "July 19-21, 2026",
+        "location": "Virtual",
+        "type": "hackathon",
+        "description": "Global virtual hackathon for pharmaceutical innovation",
+        "url": "https://www.devpost.com/hackathons",
+        "status": "upcoming"
+    },
+    {
+        "name": "Clinical Trials Methodology Workshop",
+        "date": "August 5-7, 2026",
+        "location": "Chicago, IL",
+        "type": "workshop",
+        "description": "Hands-on workshop on clinical trial design and analysis",
+        "url": "https://www.clinicaltrialsworkshop.org/",
+        "status": "upcoming"
+    },
+    {
+        "name": "AAPS PharmSci 360",
+        "date": "October 19-22, 2026",
+        "location": "Orlando, FL",
+        "type": "conference",
+        "description": "American Association of Pharmaceutical Scientists annual meeting",
+        "url": "https://www.aaps.org/meetings-and-events",
+        "status": "upcoming"
+    },
+    {
+        "name": "HealthTech Hackathon 2026",
+        "date": "February 14-16, 2026",
+        "location": "Virtual",
+        "type": "hackathon",
+        "description": "Recent hackathon focused on healthcare technology solutions",
+        "url": "https://www.healthtechhack.com/",
+        "status": "past"
+    },
+    {
+        "name": "J.P. Morgan Healthcare Conference",
+        "date": "January 13-16, 2026",
+        "location": "San Francisco, CA",
+        "type": "conference",
+        "description": "Annual healthcare investment conference",
+        "url": "https://www.jpmorgan.com/healthcare-conference",
+        "status": "past"
+    }
+]
