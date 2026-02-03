@@ -44,9 +44,9 @@ A comprehensive pharmaceutical knowledge portal built with Streamlit, featuring 
 - Quick-access buttons for top pharma companies
 
 ### 📅 **Events & Opportunities**
-- Upcoming hackathons, conferences, and workshops
-- Curated pharma events calendar
-- Direct registration links
+- **Dynamic Search**: Real-time fetching of upcoming hackathons, conferences, and workshops
+- **Smart Filtering**: Automatically finds "upcoming" and "registration open" events
+- **Live Updates**: Always shows the latest announcements from global sources
 
 ### 💬 **AI Chatbot**
 - Powered by Groq AI (Llama 3.1 70B)

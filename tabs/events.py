@@ -2,156 +2,142 @@
 Events Page - Hackathons, Conferences, Workshops
 """
 import streamlit as st
-import json
-from pathlib import Path
-from components.cards import event_card
+from utils.data_fetchers import fetch_pharma_news
+from components.cards import news_card
 from datetime import datetime
-
-
-def load_events():
-    """Load events from JSON file"""
-    events_file = Path(__file__).parent.parent / "data" / "events.json"
-    try:
-        with open(events_file, 'r') as f:
-            return json.load(f)
-    except:
-        return []
+from utils.formatters import truncate_text
 
 
 def show():
     st.markdown('<h2 class="gradient-header">📅 Events & Opportunities</h2>', unsafe_allow_html=True)
-    st.markdown("Upcoming hackathons, conferences, and workshops in pharma & healthcare")
-    
-    # Load events
-    events = load_events()
-    
-    if not events:
-        st.error("❌ Could not load events data")
-        return
+    st.markdown("Latest news about upcoming hackathons, conferences, and workshops")
     
     # Tabs for event types
-    tab1, tab2, tab3, tab4 = st.tabs(["🏆 All Events", "💻 Hackathons", "🎤 Conferences", "🎓 Workshops"])
+    tab1, tab2, tab3 = st.tabs(["🏆 Hackathons", "🎤 Conferences", "🎓 Workshops"])
     
     with tab1:
-        st.markdown("### All Upcoming Events")
+        st.markdown("### 💻 Upcoming Hackathons & Challenges")
+        st.info("💡 Showing latest announcements for upcoming and open competitions")
         
-        # Filter upcoming events
-        upcoming = [e for e in events if e.get("status") == "upcoming"]
+        with st.spinner("🔍 Searching for open hackathons..."):
+            # Query focused on FUTURE events and REGISTRATION
+            hackathon_news = fetch_pharma_news(
+                query='(hackathon OR competition OR challenge) AND (healthcare OR pharma) AND ("upcoming" OR "register" OR "apply" OR "deadline" OR "announced")', 
+                page_size=15
+            )
         
-        if upcoming:
-            st.success(f"✅ {len(upcoming)} upcoming events")
+        if hackathon_news:
+            st.success(f"✅ Found {len(hackathon_news)} opportunities")
             
-            for event in upcoming:
-                event_card(
-                    name=event.get("name", "N/A"),
-                    date=event.get("date", "N/A"),
-                    location=event.get("location", "N/A"),
-                    event_type=event.get("type", "event"),
-                    url=event.get("url", "#"),
-                    description=event.get("description")
+            for article in hackathon_news:
+                title = article.get("title", "No title")
+                description = article.get("description", "No description available")
+                # Filter out snippets that look like past reports
+                if "concluded" in description.lower() or "winner" in description.lower() or "held on" in description.lower():
+                    continue
+                    
+                source = article.get("source", {}).get("name", "Unknown")
+                published_at = article.get("publishedAt", "")
+                url = article.get("url", "#")
+                
+                try:
+                    date_obj = datetime.fromisoformat(published_at.replace('Z', '+00:00'))
+                    formatted_date = date_obj.strftime("%B %d, %Y")
+                except:
+                    formatted_date = published_at
+                
+                news_card(
+                    title=f"🚀 {title}",
+                    description=truncate_text(description, 200),
+                    source=source,
+                    date=f"Posted: {formatted_date}",
+                    url=url
                 )
         else:
-            st.info("No upcoming events at the moment")
-        
-        st.markdown("---")
-        st.markdown("### Recent Events")
-        
-        past = [e for e in events if e.get("status") == "past"]
-        
-        if past:
-            for event in past:
-                event_card(
-                    name=event.get("name", "N/A") + " (Past)",
-                    date=event.get("date", "N/A"),
-                    location=event.get("location", "N/A"),
-                    event_type=event.get("type", "event"),
-                    url=event.get("url", "#"),
-                    description=event.get("description")
-                )
-    
+            st.info("No upcoming hackathon announcements found right now.")
+
     with tab2:
-        st.markdown("### 💻 Hackathons")
+        st.markdown("### 🎤 Upcoming Conferences & Summits")
+        st.info("💡 Showing latest announcements for scheduled conferences")
         
-        hackathons = [e for e in events if e.get("type") == "hackathon" and e.get("status") == "upcoming"]
+        with st.spinner("🔍 Searching for upcoming conferences..."):
+            # Query focused on UPCOMING events
+            conf_news = fetch_pharma_news(
+                query='(conference OR summit OR congress) AND (pharmaceutical OR biotech) AND ("scheduled" OR "to be held" OR "registration open" OR "dates announced") -"report" -"results"', 
+                page_size=15
+            )
         
-        if hackathons:
-            st.success(f"✅ {len(hackathons)} upcoming hackathons")
+        if conf_news:
+            st.success(f"✅ Found {len(conf_news)} announcements")
             
-            for event in hackathons:
-                event_card(
-                    name=event.get("name", "N/A"),
-                    date=event.get("date", "N/A"),
-                    location=event.get("location", "N/A"),
-                    event_type="hackathon",
-                    url=event.get("url", "#"),
-                    description=event.get("description")
+            for article in conf_news:
+                title = article.get("title", "No title")
+                description = article.get("description", "No description available")
+                # Filter out past event reports
+                if "recap" in title.lower() or "highlights" in title.lower():
+                    continue
+
+                source = article.get("source", {}).get("name", "Unknown")
+                published_at = article.get("publishedAt", "")
+                url = article.get("url", "#")
+                
+                try:
+                    date_obj = datetime.fromisoformat(published_at.replace('Z', '+00:00'))
+                    formatted_date = date_obj.strftime("%B %d, %Y")
+                except:
+                    formatted_date = published_at
+                
+                news_card(
+                    title=f"🗓️ {title}",
+                    description=truncate_text(description, 200),
+                    source=source,
+                    date=f"Posted: {formatted_date}",
+                    url=url
                 )
         else:
-            st.info("No upcoming hackathons. Check back soon!")
-        
-        st.markdown("---")
-        st.markdown("#### 🔍 Find More Hackathons")
-        st.markdown("""
-        - [Devpost - Healthcare Hackathons](https://devpost.com/hackathons?themes[]=Health)
-        - [Hacking Medicine](https://hackingmedicine.mit.edu/)
-        - [Major League Hacking](https://mlh.io/seasons/2026/events)
-        """)
+            st.info("No upcoming conference announcements found.")
     
     with tab3:
-        st.markdown("### 🎤 Conferences")
+        st.markdown("### 🎓 Upcoming Workshops & Training")
         
-        conferences = [e for e in events if e.get("type") == "conference" and e.get("status") == "upcoming"]
+        with st.spinner("🔍 Searching for training opportunities..."):
+            # Query focused on TRAINING and WORKSHOPS
+            workshop_news = fetch_pharma_news(
+                query='(workshop OR webinar OR training) AND (FDA OR "clinical trials" OR regulatory) AND ("upcoming" OR "register" OR "join us" OR "session")', 
+                page_size=15
+            )
         
-        if conferences:
-            st.success(f"✅ {len(conferences)} upcoming conferences")
+        if workshop_news:
+            st.success(f"✅ Found {len(workshop_news)} opportunities")
             
-            for event in conferences:
-                event_card(
-                    name=event.get("name", "N/A"),
-                    date=event.get("date", "N/A"),
-                    location=event.get("location", "N/A"),
-                    event_type="conference",
-                    url=event.get("url", "#"),
-                    description=event.get("description")
+            for article in workshop_news:
+                title = article.get("title", "No title")
+                # Filter out obvious past reports
+                if "report" in title.lower() or "summary" in title.lower():
+                    continue
+                    
+                description = article.get("description", "No description available")
+                source = article.get("source", {}).get("name", "Unknown")
+                published_at = article.get("publishedAt", "")
+                url = article.get("url", "#")
+                
+                try:
+                    date_obj = datetime.fromisoformat(published_at.replace('Z', '+00:00'))
+                    formatted_date = date_obj.strftime("%B %d, %Y")
+                except:
+                    formatted_date = published_at
+                
+                news_card(
+                    title=f"🎓 {title}",
+                    description=truncate_text(description, 200),
+                    source=source,
+                    date=f"Posted: {formatted_date}",
+                    url=url
                 )
         else:
-            st.info("No upcoming conferences. Check back soon!")
-        
-        st.markdown("---")
-        st.markdown("#### 🔍 Find More Conferences")
-        st.markdown("""
-        - [BIO Events Calendar](https://www.bio.org/events)
-        - [Pharma Conferences](https://www.pharmaceutical-conferences.com/)
-        - [Clinical Trials Arena Events](https://www.clinicaltrialsarena.com/events/)
-        """)
-    
-    with tab4:
-        st.markdown("### 🎓 Workshops")
-        
-        workshops = [e for e in events if e.get("type") == "workshop" and e.get("status") == "upcoming"]
-        
-        if workshops:
-            st.success(f"✅ {len(workshops)} upcoming workshops")
+            st.info("No upcoming workshop announcements found.")
             
-            for event in workshops:
-                event_card(
-                    name=event.get("name", "N/A"),
-                    date=event.get("date", "N/A"),
-                    location=event.get("location", "N/A"),
-                    event_type="workshop",
-                    url=event.get("url", "#"),
-                    description=event.get("description")
-                )
-        else:
-            st.info("No upcoming workshops. Check back soon!")
-        
-        st.markdown("---")
-        st.markdown("#### 🔍 Find More Workshops")
-        st.markdown("""
-        - [FDA Training & Continuing Education](https://www.fda.gov/training-and-continuing-education)
-        - [NCBI Workshops](https://www.ncbi.nlm.nih.gov/home/workshops/)
-        - [Coursera Pharmaceutical Courses](https://www.coursera.org/courses?query=pharmaceutical)
-        """)
-    
     st.markdown("<br>", unsafe_allow_html=True)
-    st.info("💡 **Note:** Events are curated and updated regularly. Click links to verify dates and registration.")
+    if st.button("🔄 Refresh Events News", use_container_width=True):
+        st.cache_data.clear()
+        st.rerun()
