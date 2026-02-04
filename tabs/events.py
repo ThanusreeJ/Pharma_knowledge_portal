@@ -1,163 +1,114 @@
 """
-Events Page - Curated 2026 Events & Training
+Events Page - Dynamic Events via NewsAPI with Strict Filtering
 """
 import streamlit as st
+from utils.data_fetchers import fetch_pharma_news
+from components.cards import news_card
 from datetime import datetime
+from utils.formatters import truncate_text
 
-def event_card(title, date, location, description, url, badges=None, icon="�"):
+def strict_future_filter(articles):
     """
-    Custom card for specific events with dates and registration links
+    Strictly filters articles to find only future/upcoming events.
+    Criteria:
+    1. Must contain '2026' or '2027' in title or description.
+    2. Must contain event keywords (register, deadline, scheduled, etc.).
+    3. Must NOT contain noise keywords (market, report, earnings).
     """
-    badges_html = " ".join([
-        f'<span style="background: rgba(99, 102, 241, 0.1); color: #6366F1; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; margin-right: 6px;">{b}</span>' 
-        for b in (badges or [])
-    ])
+    valid_events = []
     
-    st.markdown(f"""
-    <div class="card" style="padding: 1.5rem; margin-bottom: 1rem; border-radius: 12px; background: var(--card-bg); border: 1px solid rgba(128, 128, 128, 0.1);">
-        <div style="display: flex; justify-content: space-between; align-items: start;">
-            <div style="flex-grow: 1;">
-                <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
-                    <span style="font-size: 1.2rem; margin-right: 0.5rem;">{icon}</span>
-                    <h4 style="margin: 0; color: var(--text-primary);">{title}</h4>
-                </div>
-                <div style="margin-bottom: 0.8rem; color: var(--text-secondary); font-size: 0.9rem;">
-                    <strong>🗓️ {date}</strong> &nbsp; | &nbsp; 📍 {location}
-                </div>
-                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.5;">{description}</p>
-                {badges_html}
-            </div>
-            <a href="{url}" target="_blank" style="text-decoration: none;">
-                <button style="background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 0.9rem; margin-left: 1rem; white-space: nowrap;">
-                    View Details ↗
-                </button>
-            </a>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    # Keywords that suggest an actionable event
+    event_indicators = [
+        "register", "registration", "deadline", "apply", "scheduled", 
+        "to be held", "dates announced", "call for", "open for", "submit", "join us"
+    ]
+    
+    # Keywords that suggest noise/news/reports
+    noise_indicators = [
+        "market report", "earnings", "stocks", "shares", "finance", 
+        "robbery", "crime", "police", "quarterly", "revenue", "profit",
+        "analysis", "forecast", "growth", "cagr", "dividend"
+    ]
+    
+    current_year = str(datetime.now().year)
+    next_year = str(datetime.now().year + 1)
+    
+    for article in articles:
+        title = article.get("title", "").lower()
+        desc = (article.get("description", "") or "").lower()
+        text = f"{title} {desc}"
+        
+        # 1. Check for Future Year (Critical for "Upcoming")
+        has_future_year = next_year in text or (current_year in text and any(m in text for m in ["dec", "nov", "oct", "sep", "aug"]))
+        
+        # 2. Check for Event Action
+        is_actionable = any(kw in text for kw in event_indicators)
+        
+        # 3. Check for Noise
+        is_noise = any(kw in text for kw in noise_indicators)
+        
+        # Combined check: Must be actionable AND not noise (Future year is optional but a strong plus)
+        if is_actionable and not is_noise:
+            valid_events.append(article)
+            
+    return valid_events
 
 def show():
-    st.markdown('<h2 class="gradient-header">📅 Upcoming 2026 Pharma Events</h2>', unsafe_allow_html=True)
-    st.markdown("Planned upcoming hackathons, conferences, and confirmed training sessions for 2026.")
+    st.markdown('<h2 class="gradient-header">📅 Dynamic Pharma Events</h2>', unsafe_allow_html=True)
+    st.markdown("Real-time feed of upcoming opportunities. Auto-filtered for relevance.")
     
-    tab1, tab2, tab3 = st.tabs(["🏆 Hackathons", "🎤 Conferences", "🎓 Training & Workshops"])
+    tab1, tab2, tab3 = st.tabs(["🏆 Hackathons", "🎤 Conferences", "🎓 Workshops"])
     
-    with tab1:
-        st.markdown("### 💻 Upcoming Hackathons (2026)")
-        st.info("💡 Confirmed upcoming challenges for healthcare innovation")
-        
-        event_card(
-            title="HSIL Hackathon 2026: Building High-Value Health Systems",
-            date="April 10-11, 2026",
-            location="Global / Hybrid",
-            description="Leveraging AI to design solutions that strengthen health systems. Hosted by the Health Systems Innovation Lab at Harvard.",
-            url="https://www.hsph.harvard.edu/health-systems-innovation-lab/",
-            badges=["AI & Health", "Harvard", "Global"],
-            icon="🏥"
-        )
-        
-        event_card(
-            title="FOSSEE OSHW Hackathon 2026",
-            date="Feb 16 - Mar 16, 2026",
-            location="Virtual / IIT Bombay",
-            description="Open Source Hardware Hackathon focusing on affordable healthcare and assistive devices. Free registration.",
-            url="https://fossee.in/", 
-            badges=["Open Source", "Medical Devices", "Free"],
-            icon="�️"
-        )
-        
-        event_card(
-            title="Biomaterials Hackathon 2026",
-            date="March 13-15, 2026",
-            location="Eindhoven, Netherlands",
-            description="Innovate with biomaterials to address real-world health challenges like personalized implants and ATMPs.",
-            url="https://smartbiomaterials.nl/",
-            badges=["Biotech", "In-person", "Innovation"],
-            icon="🧬"
-        )
+    # Helper to fetch and display
+    def fetch_and_display(query, tab_name, icon="📅"):
+        with st.spinner(f"� Scanning global news for {tab_name}..."):
+            # Fetch a larger batch to allow for strict filtering
+            raw_news = fetch_pharma_news(query, page_size=40)
+            filtered_events = strict_future_filter(raw_news)
+            
+        if filtered_events:
+            st.success(f"✅ Found {len(filtered_events)} verified upcoming events")
+            for article in filtered_events:
+                title = article.get("title", "No title")
+                description = article.get("description", "No description available")
+                source = article.get("source", {}).get("name", "Unknown")
+                published_at = article.get("publishedAt", "")
+                url = article.get("url", "#")
+                
+                try:
+                    date_obj = datetime.fromisoformat(published_at.replace('Z', '+00:00'))
+                    formatted_date = date_obj.strftime("%B %d, %Y")
+                except:
+                    formatted_date = published_at
+                
+                news_card(
+                    title=f"{icon} {title}",
+                    description=truncate_text(description, 200),
+                    source=source,
+                    date=f"Posted: {formatted_date}",
+                    url=url
+                )
+        else:
+            st.warning(f"No specific '{tab_name}' found in live news matching strict filters.")
+            st.info("💡 Try refreshing later or check the 'Pharma News' tab for general updates.")
 
-        st.markdown("---")
-        st.markdown("#### 🔍 Platforms for More")
-        st.markdown("[Devpost Health](https://devpost.com/hackathons?themes[]=Health) | [Reskilll](https://reskilll.com/) | [MIT Hacking Medicine](https://hackingmedicine.mit.edu/)")
+    with tab1:
+        st.markdown("### 💻 Hackathons & Challenges")
+        # Query: Broad enough to catch events, strict filter does the rest
+        q = '(hackathon OR competition OR challenge) AND ("pharmaceutical" OR "drug discovery" OR "bioinformatics" OR "clinical trials")'
+        fetch_and_display(q, "hackathons", "🚀")
 
     with tab2:
-        st.markdown("### 🎤 Major Conferences (Registration Open)")
-        st.info("💡 Key industry gatherings confirmed for 2026")
-        
-        event_card(
-            title="SCOPE Summit 2026",
-            date="Feb 2-5, 2026",
-            location="Orlando, FL",
-            description="New Date! The Summit for Clinical Ops Executives. Strategy and innovation in clinical trials.",
-            url="https://www.scopesummit.com/",
-            badges=["Clinical Ops", "Networking", "Feb 2026"],
-            icon="🔬"
-        )
-        
-        event_card(
-            title="Pharma Forum 2026",
-            date="March 22-25, 2026",
-            location="Boston, MA",
-            description="The premier conference for meeting and event management professionals in life sciences.",
-            url="https://informaconnect.com/pharma-forum/",
-            badges=["Life Sciences", "Management", "Boston"],
-            icon="🤝"
-        )
-        
-        event_card(
-            title="INTERPHEX 2026",
-            date="April 21-23, 2026",
-            location="New York, NY",
-            description="The leading global event that fuses industry innovation with expert-led technical education.",
-            url="https://www.interphex.com/",
-            badges=["Manufacturing", "Biotech", "NYC"],
-            icon="🏭"
-        )
-
-        event_card(
-            title="BIO International Convention 2026",
-            date="June 22-25, 2026",
-            location="San Diego, CA",
-            description="The largest global event for the biotechnology industry. Registration opens Feb 2026.",
-            url="https://www.bio.org/events/bio-international-convention",
-            badges=["Biggest Event", "Biotech", "San Diego"],
-            icon="🌍"
-        )
-        
+        st.markdown("### 🎤 Conferences & Summits")
+        q = '(conference OR summit OR congress) AND ("pharmaceutical" OR "biotech" OR "drug development")'
+        fetch_and_display(q, "conferences", "🗓️")
     
     with tab3:
-        st.markdown("### 🎓 Confirmed Training & Workshops")
-        st.info("💡 Official regulatory and clinical training opportunities")
-        
-        event_card(
-            title="FDA CDERLearn: Drug Regulation Training",
-            date="On-Demand / 2026",
-            location="Online (Free)",
-            description="Official FDA training modules for industry. Covers marketing authorization, clinical study sponsorship, and CMC.",
-            url="https://www.fda.gov/drugs/resources-training-health-professionals/cderlearn-training-and-education",
-            badges=["Official FDA", "Regulatory", "Free"],
-            icon="🏛️"
-        )
-
-        event_card(
-            title="FDA Food Traceability Rule Training",
-            date="Spring 2026 (Bi-monthly)",
-            location="Online & In-person",
-            description="New workshop series by N.C. State & experts to help comply with the FDA Food Traceability Rule.",
-            url="https://www.fda.gov/food/food-safety-modernization-act-fsma/fsma-final-rule-requirements-additional-traceability-records-certain-foods",
-            badges=["Compliance", "Food Safety", "New Rule"],
-            icon="🥗"
-        )
-        
-        event_card(
-            title="NIH Clinical Research Training",
-            date="Ongoing 2026",
-            location="Online (Free)",
-            description="Comprehensive, free online training in clinical research from the National Institutes of Health.",
-            url="https://clinicalcenter.nih.gov/training/training.html",
-            badges=["NIH", "Clinical Trials", "Certification"],
-            icon="⚕️"
-        )
+        st.markdown("### 🎓 Training & Workshops")
+        q = '(workshop OR webinar OR training) AND (FDA OR "regulatory affairs" OR "clinical trials")'
+        fetch_and_display(q, "workshops", "🎓")
             
     st.markdown("<br>", unsafe_allow_html=True)
-    st.warning("⚠️ **Note:** All dates and locations are based on current announcements and subject to change by organizers.")
+    if st.button("🔄 Refresh Live Feed", use_container_width=True):
+        st.cache_data.clear()
+        st.rerun()
