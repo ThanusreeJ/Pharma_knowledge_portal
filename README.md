@@ -44,9 +44,9 @@ A comprehensive pharmaceutical knowledge portal built with Streamlit, featuring 
 - Quick-access buttons for top pharma companies
 
 ### 📅 **Events & Opportunities**
-- **Dynamic Search**: Real-time fetching of upcoming hackathons, conferences, and workshops
-- **Smart Filtering**: Automatically finds "upcoming" and "registration open" events
-- **Live Updates**: Always shows the latest announcements from global sources
+- **Verified Resources**: Direct links to Devpost, Reskilll, and regulatory training
+- **Curated Directories**: Access global event hubs like BIO and J.P. Morgan
+- **Educational Tools**: Free training resources from FDA, NIH, and Coursera
 
 ### 💬 **AI Chatbot**
 - Powered by Groq AI (Llama 3.1 70B)
