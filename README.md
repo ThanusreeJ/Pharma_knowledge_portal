@@ -44,9 +44,9 @@ A comprehensive pharmaceutical knowledge portal built with Streamlit, featuring 
 - Quick-access buttons for top pharma companies
 
 ### 📅 **Events & Opportunities**
-- **Verified Resources**: Direct links to Devpost, Reskilll, and regulatory training
-- **Curated Directories**: Access global event hubs like BIO and J.P. Morgan
-- **Educational Tools**: Free training resources from FDA, NIH, and Coursera
+- **Upcoming 2026 Events**: Confirmed list of hackathons (HSIL, FOSSEE) and conferences (BIO, INTERPHEX).
+- **Direct Registration**: Actionable links to official event pages.
+- **Training Resources**: Verified FDA and NIH workshop modules.
 
 ### 💬 **AI Chatbot**
 - Powered by Groq AI (Llama 3.1 70B)

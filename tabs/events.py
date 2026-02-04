@@ -1,22 +1,35 @@
 """
-Events Page - Curated Resource Directory
+Events Page - Curated 2026 Events & Training
 """
 import streamlit as st
-from components.cards import event_card # Reuse generic card or create simple resource card
+from datetime import datetime
 
-def resource_card(title, description, url, badges=None, icon="🔗"):
-    """Custom card for resources with external links"""
+def event_card(title, date, location, description, url, badges=None, icon="�"):
+    """
+    Custom card for specific events with dates and registration links
+    """
+    badges_html = " ".join([
+        f'<span style="background: rgba(99, 102, 241, 0.1); color: #6366F1; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; margin-right: 6px;">{b}</span>' 
+        for b in (badges or [])
+    ])
+    
     st.markdown(f"""
     <div class="card" style="padding: 1.5rem; margin-bottom: 1rem; border-radius: 12px; background: var(--card-bg); border: 1px solid rgba(128, 128, 128, 0.1);">
         <div style="display: flex; justify-content: space-between; align-items: start;">
             <div style="flex-grow: 1;">
-                <h4 style="margin: 0 0 0.5rem 0; color: var(--text-primary);">{icon} {title}</h4>
-                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.8rem;">{description}</p>
-                {" ".join([f'<span style="background: rgba(99, 102, 241, 0.1); color: #6366F1; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; margin-right: 6px;">{b}</span>' for b in (badges or [])])}
+                <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                    <span style="font-size: 1.2rem; margin-right: 0.5rem;">{icon}</span>
+                    <h4 style="margin: 0; color: var(--text-primary);">{title}</h4>
+                </div>
+                <div style="margin-bottom: 0.8rem; color: var(--text-secondary); font-size: 0.9rem;">
+                    <strong>🗓️ {date}</strong> &nbsp; | &nbsp; 📍 {location}
+                </div>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem; line-height: 1.5;">{description}</p>
+                {badges_html}
             </div>
             <a href="{url}" target="_blank" style="text-decoration: none;">
-                <button style="background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 0.9rem; margin-left: 1rem;">
-                    Open ↗
+                <button style="background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 0.9rem; margin-left: 1rem; white-space: nowrap;">
+                    View Details ↗
                 </button>
             </a>
         </div>
@@ -24,127 +37,127 @@ def resource_card(title, description, url, badges=None, icon="🔗"):
     """, unsafe_allow_html=True)
 
 def show():
-    st.markdown('<h2 class="gradient-header">📅 Pharma Events & Opportunities</h2>', unsafe_allow_html=True)
-    st.markdown("Verified platforms to find upcoming hackathons, conferences, and training in 2026")
+    st.markdown('<h2 class="gradient-header">📅 Upcoming 2026 Pharma Events</h2>', unsafe_allow_html=True)
+    st.markdown("Planned upcoming hackathons, conferences, and confirmed training sessions for 2026.")
     
-    # Tabs for event types
-    tab1, tab2, tab3 = st.tabs(["🏆 Hackathon Platforms", "🎤 Conference Directories", "🎓 Training & Workshops"])
+    tab1, tab2, tab3 = st.tabs(["🏆 Hackathons", "🎤 Conferences", "🎓 Training & Workshops"])
     
     with tab1:
-        st.markdown("### 💻 Find Healthcare & Pharma Hackathons")
-        st.info("💡 Best platforms to find verified competitions and coding challenges")
+        st.markdown("### 💻 Upcoming Hackathons (2026)")
+        st.info("💡 Confirmed upcoming challenges for healthcare innovation")
         
-        resource_card(
-            "Devpost: Health Hackathons",
-            "The world's largest hackathon platform. Directly search for active 'Health' and 'Life Sciences' challenges.",
-            "https://devpost.com/hackathons?themes[]=Health",
-            badges=["Global", "Virtual & In-person", "Huge Community"],
-            icon="🚀"
-        )
-        
-        resource_card(
-            "Reskilll: Innovation Challenges",
-            "Platform for student and professional hackathons, often partnering with major tech and pharma companies.",
-            "https://reskilll.com/", 
-            badges=["Student Focused", "Innovation", "Tech meets Pharma"],
-            icon="💡"
-        )
-        
-        resource_card(
-            "MIT Hacking Medicine",
-            "Premier healthcare innovation ecosystem. Hosts the famous 'Grand Hack' and other global events.",
-            "https://hackingmedicine.mit.edu/",
-            badges=["Prestigious", "Innovation", "MIT"],
+        event_card(
+            title="HSIL Hackathon 2026: Building High-Value Health Systems",
+            date="April 10-11, 2026",
+            location="Global / Hybrid",
+            description="Leveraging AI to design solutions that strengthen health systems. Hosted by the Health Systems Innovation Lab at Harvard.",
+            url="https://www.hsph.harvard.edu/health-systems-innovation-lab/",
+            badges=["AI & Health", "Harvard", "Global"],
             icon="🏥"
         )
-
-        resource_card(
-            "HackerEarth: Healthcare Challenges",
-            "Major platform hosting corporate hackathons for big pharma and healthcare tech companies.",
-            "https://www.hackerearth.com/challenges/hackathon/",
-            badges=["Corporate", "Hiring Opportunities", "Global"],
-            icon="💻"
+        
+        event_card(
+            title="FOSSEE OSHW Hackathon 2026",
+            date="Feb 16 - Mar 16, 2026",
+            location="Virtual / IIT Bombay",
+            description="Open Source Hardware Hackathon focusing on affordable healthcare and assistive devices. Free registration.",
+            url="https://fossee.in/", 
+            badges=["Open Source", "Medical Devices", "Free"],
+            icon="�️"
         )
         
+        event_card(
+            title="Biomaterials Hackathon 2026",
+            date="March 13-15, 2026",
+            location="Eindhoven, Netherlands",
+            description="Innovate with biomaterials to address real-world health challenges like personalized implants and ATMPs.",
+            url="https://smartbiomaterials.nl/",
+            badges=["Biotech", "In-person", "Innovation"],
+            icon="🧬"
+        )
+
         st.markdown("---")
-        st.markdown("#### 🔍 Upcoming Highlight (2026)")
-        st.markdown("""
-        - **BioHackathon Europe**: Annual event for bioinformatics and life sciences standards. [Visit Website](https://www.biohackathon-europe.org/)
-        - **Health Systems Innovation Lab (HSIL)**: Developing high-value health system solutions. [Learn More](https://www.hsph.harvard.edu/health-systems-innovation-lab/)
-        """)
+        st.markdown("#### 🔍 Platforms for More")
+        st.markdown("[Devpost Health](https://devpost.com/hackathons?themes[]=Health) | [Reskilll](https://reskilll.com/) | [MIT Hacking Medicine](https://hackingmedicine.mit.edu/)")
 
     with tab2:
-        st.markdown("### 🎤 Global Pharmaceutical Conferences (2026 Directory)")
-        st.info("💡 Curated directories and major event hubs")
+        st.markdown("### 🎤 Major Conferences (Registration Open)")
+        st.info("💡 Key industry gatherings confirmed for 2026")
         
-        resource_card(
-            "BIO International Convention",
-            "The largest global event for the biotechnology industry. A must-attend for pharma networking.",
-            "https://www.bio.org/events",
-            badges=["Largest Global Event", "Biotech", "Networking"],
-            icon="🌍"
+        event_card(
+            title="SCOPE Summit 2026",
+            date="Feb 2-5, 2026",
+            location="Orlando, FL",
+            description="New Date! The Summit for Clinical Ops Executives. Strategy and innovation in clinical trials.",
+            url="https://www.scopesummit.com/",
+            badges=["Clinical Ops", "Networking", "Feb 2026"],
+            icon="🔬"
         )
         
-        resource_card(
-            "EuroPharma Congress 2026",
-            "Leading forum for Pharma researchers and professors. Covers pharmacology and toxicology.",
-            "https://europe.pharmaceuticalconferences.com/",
-            badges=["Europe", "Research", "Academic"],
-            icon="🇪🇺"
+        event_card(
+            title="Pharma Forum 2026",
+            date="March 22-25, 2026",
+            location="Boston, MA",
+            description="The premier conference for meeting and event management professionals in life sciences.",
+            url="https://informaconnect.com/pharma-forum/",
+            badges=["Life Sciences", "Management", "Boston"],
+            icon="🤝"
         )
         
-        resource_card(
-            "TechTarget Healthcare Conference Calendar",
-            "Comprehensive list of top healthcare IT and pharma conferences for 2026.",
-            "https://www.techtarget.com/searchhealthit/tip/Top-healthcare-conferences-to-attend",
-            badges=["Directory", "Health Tech", "Updated List"],
-            icon="📅"
+        event_card(
+            title="INTERPHEX 2026",
+            date="April 21-23, 2026",
+            location="New York, NY",
+            description="The leading global event that fuses industry innovation with expert-led technical education.",
+            url="https://www.interphex.com/",
+            badges=["Manufacturing", "Biotech", "NYC"],
+            icon="🏭"
         )
 
-        resource_card(
-            "J.P. Morgan Healthcare Conference",
-            "The premier investment symposium for the healthcare industry, held annually in San Francisco.",
-            "https://www.jpmorgan.com/solutions/cib/insights/health-care-conference",
-            badges=["Investment", "Industry Leaders", "San Francisco"],
-            icon="�"
+        event_card(
+            title="BIO International Convention 2026",
+            date="June 22-25, 2026",
+            location="San Diego, CA",
+            description="The largest global event for the biotechnology industry. Registration opens Feb 2026.",
+            url="https://www.bio.org/events/bio-international-convention",
+            badges=["Biggest Event", "Biotech", "San Diego"],
+            icon="🌍"
         )
         
     
     with tab3:
-        st.markdown("### � Regulatory Training & Clinical Workshops")
-        st.info("� Official sources for FDA training and clinical research certification")
+        st.markdown("### 🎓 Confirmed Training & Workshops")
+        st.info("💡 Official regulatory and clinical training opportunities")
         
-        resource_card(
-            "FDA CDERLearn",
-            "Official FDA training and education for drug regulation. Free online courses and case studies.",
-            "https://www.fda.gov/drugs/resources-training-health-professionals/cderlearn-training-and-education",
+        event_card(
+            title="FDA CDERLearn: Drug Regulation Training",
+            date="On-Demand / 2026",
+            location="Online (Free)",
+            description="Official FDA training modules for industry. Covers marketing authorization, clinical study sponsorship, and CMC.",
+            url="https://www.fda.gov/drugs/resources-training-health-professionals/cderlearn-training-and-education",
             badges=["Official FDA", "Regulatory", "Free"],
             icon="🏛️"
         )
 
-        resource_card(
-            "NIH Clinical Research Training",
-            "Comprehensive, free online training in clinical research from the National Institutes of Health.",
-            "https://clinicalcenter.nih.gov/training/training.html",
-            badges=["NIH", "Clinical Research", "Free"],
-            icon="�"
+        event_card(
+            title="FDA Food Traceability Rule Training",
+            date="Spring 2026 (Bi-monthly)",
+            location="Online & In-person",
+            description="New workshop series by N.C. State & experts to help comply with the FDA Food Traceability Rule.",
+            url="https://www.fda.gov/food/food-safety-modernization-act-fsma/fsma-final-rule-requirements-additional-traceability-records-certain-foods",
+            badges=["Compliance", "Food Safety", "New Rule"],
+            icon="🥗"
         )
         
-        resource_card(
-            "Coursera: Clinical Trials Specializations",
-            "Professional certifications from Johns Hopkins and other top universities.",
-            "https://www.coursera.org/search?query=clinical%20trials",
-            badges=["Certification", "University Level", "Flexible"],
-            icon="🎓"
-        )
-        
-        resource_card(
-            "SOCRA (Society of Clinical Research Associates)",
-            "Workshops, conferences, and certification for clinical research professionals.",
-            "https://www.socra.org/",
-            badges=["Professional Society", "Certification", "Networking"],
-            icon="�"
+        event_card(
+            title="NIH Clinical Research Training",
+            date="Ongoing 2026",
+            location="Online (Free)",
+            description="Comprehensive, free online training in clinical research from the National Institutes of Health.",
+            url="https://clinicalcenter.nih.gov/training/training.html",
+            badges=["NIH", "Clinical Trials", "Certification"],
+            icon="⚕️"
         )
             
     st.markdown("<br>", unsafe_allow_html=True)
-    st.warning("⚠️ **Note:** External links open in a new tab. Verify registration details on the official event websites.")
+    st.warning("⚠️ **Note:** All dates and locations are based on current announcements and subject to change by organizers.")
