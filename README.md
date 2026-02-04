@@ -44,9 +44,9 @@ A comprehensive pharmaceutical knowledge portal built with Streamlit, featuring 
 - Quick-access buttons for top pharma companies
 
 ### 📅 **Events & Opportunities**
-- **Smart Dynamic Feed**: Prioritizes upcoming 2026/2027 events
-- **Auto-Fallback**: Automatically shows recent news if no future events are found (ensures no empty tabs)
-- **Noise Cancellation**: Filters out financial reports and irrelevant market noise
+- **Multi-Source Fetching**: Aggregates data from diverse queries for max coverage
+- **Smart Scoring AI**: Ranks events by dates, actionability (e.g., "register"), and relevance
+- **Regex Date Parsing**: Automatically extracts "March 15-17" dates from unstructured text
 
 ### 💬 **AI Chatbot**
 - Powered by Groq AI (Llama 3.1 70B)
