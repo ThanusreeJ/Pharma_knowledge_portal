@@ -44,9 +44,9 @@ A comprehensive pharmaceutical knowledge portal built with Streamlit, featuring 
 - Quick-access buttons for top pharma companies
 
 ### 📅 **Events & Opportunities**
-- **Dynamic Live Feed**: Automatically fetches real-time event news
-- **Smart Logic**: Filters for "2026/2027" and "Registration" keywords
-- **Noise Cancellation**: Blocks generic market reports and unrelated news
+- **Smart Dynamic Feed**: Prioritizes upcoming 2026/2027 events
+- **Auto-Fallback**: Automatically shows recent news if no future events are found (ensures no empty tabs)
+- **Noise Cancellation**: Filters out financial reports and irrelevant market noise
 
 ### 💬 **AI Chatbot**
 - Powered by Groq AI (Llama 3.1 70B)
