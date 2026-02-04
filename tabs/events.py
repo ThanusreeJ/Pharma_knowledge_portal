@@ -191,18 +191,19 @@ def show():
     
     tab1, tab2, tab3 = st.tabs(["🏆 Hackathons", "🎤 Conferences", "🎓 Workshops"])
     
+
     # Helper function to fetch and display
-    def fetch_and_display(queries, event_type, tab_name, icon="📅"):
+    def fetch_and_display(query, event_type, tab_name, icon="📅"):
         all_articles = []
         
-        with st.spinner(f"🔍 Searching multiple sources for {tab_name}..."):
-            # Try multiple queries to get broader coverage
-            for query in queries:
-                try:
-                    news = fetch_pharma_news_multi_query(base_query=query, page_size=30)
-                    all_articles.extend(news)
-                except:
-                    continue
+        with st.spinner(f"🔍 Searching global news for {tab_name}..."):
+            # Single robust query fetch
+            try:
+                # Use a larger page size since we are doing one big query
+                all_articles = fetch_pharma_news_multi_query(base_query=query, page_size=50)
+            except Exception as e:
+                st.error(f"Error fetching {tab_name}: {str(e)}")
+                return
             
             # Remove duplicates based on URL
             seen_urls = set()
@@ -235,11 +236,8 @@ def show():
             st.warning(f"❌ No {tab_name} found in current news feed")
             st.markdown(f"""
             **Suggestions:**
-            - Try refreshing in a few hours (news updates frequently)
-            - Check dedicated platforms:
-              - [Devpost](https://devpost.com) for hackathons
-              - [BioConferences](https://bioconferences.com) for pharma conferences
-              - [Eventbrite](https://eventbrite.com) for workshops
+            - Try refreshing later (news updates frequently)
+            - Check dedicated platforms: [Devpost](https://devpost.com), [BioConferences](https://bioconferences.com)
             """)
 
     def display_cards(articles, icon):
@@ -268,49 +266,21 @@ def show():
     # TAB 1: HACKATHONS
     with tab1:
         st.markdown("### 💻 Pharma & Healthcare Hackathons")
-        hackathon_queries = [
-            '"pharmaceutical hackathon" OR "biotech hackathon" OR "healthcare hackathon"',
-            '"drug discovery hackathon" OR "clinical trials hackathon"',
-            'hackathon AND (pharma OR biotech OR "life sciences")',
-            '"datathon" AND (healthcare OR medical OR clinical)',
-            '"innovation challenge" AND pharmaceutical'
-        ]
-        fetch_and_display(hackathon_queries, "hackathon", "hackathons", "🚀")
+        # Combined Master Query
+        hackathon_query = '(hackathon OR "coding competition" OR "innovation challenge" OR datathon) AND ("pharmaceutical" OR "biotech" OR "healthcare" OR "drug discovery")'
+        fetch_and_display(hackathon_query, "hackathon", "hackathons", "🚀")
     
     # TAB 2: CONFERENCES
     with tab2:
         st.markdown("### 🎤 Industry Conferences & Summits")
-        conference_queries = [
-            '"pharmaceutical conference" OR "biotech summit" 2026',
-            '"drug development conference" OR "clinical trials conference"',
-            'conference AND (pharma OR biotech OR biopharma) AND 2027',
-            '"life sciences summit" OR "healthcare congress"',
-            '"FDA conference" OR "regulatory affairs conference"'
-        ]
-        fetch_and_display(conference_queries, "conference", "conferences", "🗓️")
+        # Combined Master Query
+        conference_query = '(conference OR summit OR congress OR symposium) AND ("pharmaceutical" OR "biotech" OR "clinical trials") AND (2026 OR 2027)'
+        fetch_and_display(conference_query, "conference", "conferences", "🗓️")
     
     # TAB 3: WORKSHOPS
     with tab3:
         st.markdown("### 🎓 Training, Workshops & Webinars")
-        workshop_queries = [
-            '"pharmaceutical workshop" OR "biotech training" OR "FDA webinar"',
-            'workshop AND ("clinical trials" OR "regulatory affairs")',
-            '"drug development training" OR "GMP workshop"',
-            'webinar AND (pharma OR biotech OR "life sciences") AND "registration"',
-            '"certification course" AND pharmaceutical'
-        ]
-        fetch_and_display(workshop_queries, "workshop", "workshops", "🎓")
-    
-    # Footer with tips
-    st.markdown("---")
-    st.markdown("""
-    <div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 10px; color: white;'>
-        <h4>💡 Pro Tips for Finding More Events</h4>
-        <ul>
-            <li>🔔 Enable notifications to get alerts for new events</li>
-            <li>🔄 Refresh daily - events are announced continuously</li>
-            <li>📧 Subscribe to pharma newsletters for early announcements</li>
-            <li>🌐 Follow event platforms: Eventbrite, Devpost, LinkedIn Events</li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
+        # Combined Master Query
+        workshop_query = '(workshop OR webinar OR training OR "certification course") AND (FDA OR "regulatory affairs" OR "clinical trials" OR GMP)'
+        fetch_and_display(workshop_query, "workshop", "workshops", "🎓")
+

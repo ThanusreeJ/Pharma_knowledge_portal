@@ -29,32 +29,17 @@ def fetch_pharma_news(query: str = "pharmaceutical", page_size: int = 10) -> Lis
         return response.get("articles", [])
 
 @st.cache_data(ttl=config.CACHE_TTL["news"])
-def fetch_pharma_news_multi_query(base_query: str, page_size: int = 20) -> List[Dict[str, Any]]:
+def fetch_pharma_news_multi_query(base_query: str, page_size: int = 50) -> List[Dict[str, Any]]:
     """
-    Enhanced news fetcher that tries multiple query variations for better coverage.
+    Enhanced news fetcher. 
+    Instead of making multiple API calls (which hits rate limits), 
+    we fetch a larger batch with a broad query and filter locally.
     """
-    query_variations = [
-        f'{base_query} AND (2026 OR 2027)',  # Future years
-        f'{base_query} AND ("registration" OR "deadline" OR "scheduled")',  # Actionable
-        base_query  # Fallback
-    ]
-    
-    all_articles = []
-    seen_urls = set()
-    
-    # Try multiple variations to cast a wider net
-    for query in query_variations:
-        try:
-            articles = fetch_pharma_news(query=query, page_size=page_size)
-            for article in articles:
-                url = article.get("url", "")
-                if url and url not in seen_urls:
-                    seen_urls.add(url)
-                    all_articles.append(article)
-        except Exception:
-            continue
-            
-    return all_articles
+    try:
+        # Fetch a single large batch
+        return fetch_pharma_news(query=base_query, page_size=page_size)
+    except Exception:
+        return []
 
 
 

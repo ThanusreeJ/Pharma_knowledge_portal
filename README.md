@@ -44,9 +44,9 @@ A comprehensive pharmaceutical knowledge portal built with Streamlit, featuring 
 - Quick-access buttons for top pharma companies
 
 ### 📅 **Events & Opportunities**
-- **Multi-Source Fetching**: Aggregates data from diverse queries for max coverage
+- **Optimized Fetching**: Advanced single-pass queries for Hackathons, Conferences, and Workshops
 - **Smart Scoring AI**: Ranks events by dates, actionability (e.g., "register"), and relevance
-- **Regex Date Parsing**: Automatically extracts "March 15-17" dates from unstructured text
+- **Auto-Fallback**: Ensures no empty tabs by gracefully degrading to recent news
 
 ### 💬 **AI Chatbot**
 - Powered by Groq AI (Llama 3.1 70B)
