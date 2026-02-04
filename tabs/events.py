@@ -21,8 +21,9 @@ def show():
         
         with st.spinner("🔍 Searching for open hackathons..."):
             # Query focused on FUTURE events and REGISTRATION
+            # Stricter filters: Removed generic "healthcare", added specific pharma terms
             hackathon_news = fetch_pharma_news(
-                query='(hackathon OR competition OR challenge) AND (healthcare OR pharma) AND ("upcoming" OR "register" OR "apply" OR "deadline" OR "announced")', 
+                query='(hackathon OR competition OR challenge) AND ("pharmaceutical" OR "drug discovery" OR "bioinformatics" OR "pharmacovigilance" OR "clinical trials") AND ("upcoming" OR "register" OR "apply" OR "deadline" OR "announced") -"generative ai" -"chatgpt" -"crypto" -"blockchain"', 
                 page_size=15
             )
         
@@ -62,8 +63,9 @@ def show():
         
         with st.spinner("🔍 Searching for upcoming conferences..."):
             # Query focused on UPCOMING events
+            # Added exclusions for purely tech/AI conferences unless pharma focused
             conf_news = fetch_pharma_news(
-                query='(conference OR summit OR congress) AND (pharmaceutical OR biotech) AND ("scheduled" OR "to be held" OR "registration open" OR "dates announced") -"report" -"results"', 
+                query='(conference OR summit OR congress) AND (pharmaceutical OR "drug development" OR "medicinal chemistry" OR pharmacovigilance) AND ("scheduled" OR "to be held" OR "registration open" OR "dates announced") -"report" -"results" -"market report" -"ai summit"', 
                 page_size=15
             )
         
@@ -103,7 +105,7 @@ def show():
         with st.spinner("🔍 Searching for training opportunities..."):
             # Query focused on TRAINING and WORKSHOPS
             workshop_news = fetch_pharma_news(
-                query='(workshop OR webinar OR training) AND (FDA OR "clinical trials" OR regulatory) AND ("upcoming" OR "register" OR "join us" OR "session")', 
+                query='(workshop OR webinar OR training) AND (FDA OR "clinical trials" OR "regulatory affairs" OR "good manufacturing practice" OR GMP) AND ("upcoming" OR "register" OR "join us" OR "session")', 
                 page_size=15
             )
         
