@@ -108,6 +108,7 @@ with st.sidebar:
             "Regulatory",
             "Company News",
             "Events",
+            "Company Knowledge",
             "Chatbot"
         ],
         icons=[
@@ -119,6 +120,7 @@ with st.sidebar:
             "shield-check",
             "building",
             "calendar-event",
+            "building-check",
             "chat-dots"
         ],
         menu_icon="cast",
@@ -172,6 +174,10 @@ elif selected == "Company News":
 elif selected == "Events":
     from tabs import events
     events.show()
+
+elif selected == "Company Knowledge":
+    from tabs import company_knowledge
+    company_knowledge.show()
     
 elif selected == "Chatbot":
     from tabs import chatbot
